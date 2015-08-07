@@ -1,0 +1,223 @@
+<!--
+@license
+Copyright (c) 2015 The ExpandJS authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+An element used to display a Material Design breadcrumb step.
+
+It must be used in conjunction with [mat-breadcrumb](http://expandjs.com/elements/mat-breadcrumb).
+
+```html
+<mat-breadcrumb>
+    <mat-breadcrumb-step label="My files" href="/files"></mat-breadcrumb-step>
+    <mat-breadcrumb-step label="Music" href="/files/music"></mat-breadcrumb-step>
+</mat-breadcrumb>
+```
+
+@element mat-breadcrumb-step
+@description A custom element used to display a Material Design breadcrumb step
+@keywords material design, material breadcrumb, web app, html5, expandjs, web-components
+@group navigation
+@homepage http://expandjs.com/elements/mat-breadcrumb
+@repository https://github.com/ExpandJS/mat-breadcrumb
+@demo http://expandjs.com/demo/mat-breadcrumb
+
+@behavior xp-anchor-behavior /bower_components/xp-anchor-behavior/xp-anchor-behavior.html
+@behavior xp-slave-behavior /bower_components/xp-slave-behavior/xp-slave-behavior.html
+
+@dependency polymer Polymer/polymer#^1.0.0
+@dependency expandjs ExpandJS/expandjs#0.9.6
+@dependency iron-flex-layout PolymerElements/iron-flex-layout#^1.0.0
+@dependency mat-ink ExpandJS/mat-ink#0.9.6
+@dependency mat-icon ExpandJS/mat-icon#0.9.6
+@dependency mat-icons ExpandJS/mat-icons#0.9.6
+@dependency xp-anchor-behavior ExpandJS/xp-anchor-behavior#0.9.6
+@dependency xp-slave-behavior ExpandJS/xp-slave-behavior#0.9.6
+
+@devDependency mat-demo ExpandJS/mat-demo#0.9.6
+@devDependency mat-fab ExpandJS/mat-fab#0.9.6
+@devDependency mat-header-panel ExpandJS/mat-header-panel#0.9.6
+-->
+
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../mat-icon/mat-icon.html">
+<link rel="import" href="../mat-icons/navigation-icons.html">
+<link rel="import" href="../mat-ink/mat-ink.html">
+<link rel="import" href="../xp-anchor-behavior/xp-anchor-behavior.html">
+<link rel="import" href="../xp-slave-behavior/xp-slave-behavior.html">
+
+<dom-module name="mat-breadcrumb-step">
+
+    <style>
+        :host {
+            display: inline-block;
+            overflow: visible;
+        }
+
+        :host #matBreadcrumbWrapper {
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            height: 100%;
+        }
+
+        :host #matBreadcrumbMain {
+            height: 100%;
+        }
+
+        :host #matBreadcrumbStepAnchor {
+            display: block;
+            height: 100%;
+            outline: 0;
+            overflow: hidden;
+            text-decoration: none;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        :host #matBreadcrumbStepAnchor[href]:hover {
+            text-decoration: underline;
+        }
+
+        :host #matBreadcrumbStepSeparator {
+            height: 0.706em;
+            margin: 0 0.4em;
+            min-height: 24px;
+            min-width: 24px;
+            width: 0.706em;
+        }
+
+        :host(:last-of-type) #matBreadcrumbStepSeparator {
+            display: none !important;
+        }
+    </style>
+
+    <template>
+        <div id="matBreadcrumbWrapper">
+            <mat-ink id="matBreadcrumbStepMain" opacity="[[_computeLabelOpacity(active, mobile)]]">
+                <a id="matBreadcrumbStepAnchor" tabindex="-1" on-click="_handleClick">{{label}}</a>
+            </mat-ink>
+            <mat-icon id="matBreadcrumbStepSeparator" name="navigation:chevron-right" opacity="[[_computeIconOpacity(mobile)]]"></mat-icon>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'mat-breadcrumb-step',
+
+            //BEHAVIORS
+            behaviors: [
+                Polymer.XPAnchorBehavior,
+                Polymer.XPSlaveBehavior
+            ],
+
+            /*********************************************************************/
+
+            /**
+             * Returns the masters map.
+             *
+             * @method _setupMasters
+             * @returns {Object}
+             * @private
+             */
+            _setupMasters: function () {
+                return {breadcrumb: 'mat-breadcrumb'};
+            },
+
+            /*********************************************************************/
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * If set to true, the step is active.
+                 *
+                 * @attribute active
+                 * @type boolean
+                 * @default false
+                 * @notifies
+                 */
+                active: {
+                    notify: true,
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The master breadcrumb.
+                 *
+                 * @attribute breadcrumb
+                 * @type Element
+                 * @notifies
+                 * @readonly
+                 */
+                breadcrumb: {
+                    notify: true,
+                    readOnly: true,
+                    value: null
+                },
+
+                /**
+                 * The step's label.
+                 *
+                 * @attribute label
+                 * @type string
+                 */
+                label: {
+                    reflectToAttribute: true,
+                    type: String,
+                    value: null
+                },
+
+                /**
+                 * If set to true, the step will be `mobile` styled.
+                 *
+                 * @attribute mobile
+                 * @type boolean
+                 * @default false
+                 */
+                mobile: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                }
+            },
+
+            /*********************************************************************/
+
+            // COMPUTER
+            _computeIconOpacity: function (mobile) {
+                return mobile ? 'hint' : null;
+            },
+
+            // COMPUTER
+            _computeLabelOpacity: function (active, mobile) {
+                return !active && mobile ? 'hint' : null;
+            },
+
+            /*********************************************************************/
+
+            // LISTENER
+            ready: function () {
+                this._setAnchor(this.$.matBreadcrumbStepAnchor);
+            },
+
+            /*********************************************************************/
+
+            // HANDLER
+            _handleClick: function (event) {
+                if (!event.button && this.fire('mat-redirect', {firer: this, href: event.currentTarget.href}, {cancelable: true}).defaultPrevented) { event.preventDefault(); }
+            }
+
+        });
+    </script>
+</dom-module>

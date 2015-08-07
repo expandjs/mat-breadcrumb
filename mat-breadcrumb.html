@@ -1,0 +1,257 @@
+<!--
+@license
+Copyright (c) 2015 The ExpandJS authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+An element used to display a Material Design breadcrumb.
+
+It must be used in conjunction with [mat-breadcrumb-step](http://expandjs.com/elements/mat-breadcrumb-step).
+
+```html
+<mat-breadcrumb>
+    <mat-breadcrumb-step label="My files" href="/files"></mat-breadcrumb-step>
+    <mat-breadcrumb-step label="Music" href="/files/music"></mat-breadcrumb-step>
+</mat-breadcrumb>
+```
+
+Using the breadcrumb in an [app bar](http://www.google.com/design/spec/layout/structure.html#structure-app-bar)
+will cause it to [change style](http://www.google.com/design/spec/layout/structure.html#structure-side-nav)
+on a mobile device.
+
+```html
+<mat-header>
+    <mat-breadcrumb>...</mat-breadcrumb>
+</mat-header>
+```
+
+@element mat-breadcrumb
+@description A custom element used to display a Material Design breadcrumb
+@keywords material design, material breadcrumb, web app, html5, expandjs, web-components
+@group navigation
+@homepage http://expandjs.com/elements/mat-breadcrumb
+@repository https://github.com/ExpandJS/mat-breadcrumb
+@demo http://expandjs.com/demo/mat-breadcrumb
+
+@behavior xp-master-behavior /bower_components/xp-master-behavior/xp-master-behavior.html
+
+@dependency polymer Polymer/polymer#^1.0.0
+@dependency expandjs ExpandJS/expandjs#0.9.6
+@dependency iron-flex-layout PolymerElements/iron-flex-layout#^1.0.0
+@dependency xp-master-behavior ExpandJS/xp-master-behavior#0.9.6
+@dependency xp-media-query ExpandJS/xp-media-query#0.9.6
+
+@devDependency mat-demo ExpandJS/mat-demo#0.9.6
+@devDependency mat-fab ExpandJS/mat-fab#0.9.6
+@devDependency mat-header-panel ExpandJS/mat-header-panel#0.9.6
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../xp-master-behavior/xp-master-behavior.html">
+<link rel="import" href="../xp-media-query/xp-media-query.html">
+<link rel="import" href="mat-breadcrumb-step.html">
+
+<dom-module name="mat-breadcrumb">
+
+    <style>
+        :host {
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            display: block;
+            overflow: hidden;
+            position: relative;
+        }
+    </style>
+
+    <template>
+        <xp-media-query query="[[query]]" matched="{{mobile}}"></xp-media-query>
+        <content id="content"></content>
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'mat-breadcrumb',
+
+            // BEHAVIORS
+            behaviors: [
+                Polymer.XPMasterBehavior
+            ],
+
+            /*********************************************************************/
+
+            /**
+             * Refreshes the element.
+             *
+             * @method _refresh
+             * @returns {Element}
+             * @private
+             */
+            _refresh: function () {
+
+                // Vars
+                var self = this;
+
+                // Checking
+                if (!self.header) { return; }
+
+                // Setting
+                self.steps.forEach(function (step) { step.mobile = self.mobile; });
+
+                // Toggling
+                self.steps.forEach(function (step) { XP.setStyle(step, 'display', self.mobile && !self.shift && step !== self.activeStep  ? 'none' : null); });
+
+                // Shifting
+                XP.setStyle(self, 'margin-left', self.mobile ? -self.activeStep.offsetLeft + 'px' : null);
+            },
+
+            /**
+             * Returns the slaves map.
+             *
+             * @method _setupSlaves
+             * @returns {Object}
+             * @private
+             */
+            _setupSlaves: function () {
+                return {steps: 'mat-breadcrumb-step'};
+            },
+
+            /*********************************************************************/
+
+            // LISTENERS
+            listeners: {
+                'steps-changed': '_handleSteps'
+            },
+
+            // OBSERVERS
+            observers: [
+                '_refresh(activeStep, mobile, shift, steps.*)'
+            ],
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * The breadcrumb's active step.
+                 *
+                 * @attribute active-step
+                 * @type Element
+                 * @notifies
+                 * @readonly
+                 */
+                activeStep: {
+                    notify: true,
+                    readOnly: true,
+                    value: null
+                },
+
+                /**
+                 * The header containing the breadcrumb.
+                 *
+                 * @attribute header
+                 * @type Element
+                 * @notifies
+                 * @readonly
+                 */
+                header: {
+                    notify: true,
+                    readOnly: true,
+                    value: null
+                },
+
+                /**
+                 * If true the breadcrumb will have a `mobile` style applied.
+                 *
+                 * @attribute mobile
+                 * @type boolean
+                 * @default false
+                 */
+                mobile: {
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The media-query used to activate the `mobile` view.
+                 *
+                 * @attribute query
+                 * @type string
+                 * @default "(max-width: 960px)"
+                 */
+                query: {
+                    type: String,
+                    value: '(max-width: 960px)'
+                },
+
+                /**
+                 * If set to true, the steps will be shifted to the left, instead of hidden, in `mobile` view.
+                 *
+                 * @attribute shift
+                 * @type boolean
+                 * @default false
+                 */
+                shift: {
+                    reflectToAttribute: true,
+                    type: Boolean,
+                    value: false
+                },
+
+                /**
+                 * The breadcrumb's steps.
+                 *
+                 * @attribute steps
+                 * @type Array
+                 * @notifies
+                 * @readonly
+                 */
+                steps: {
+                    notify: true,
+                    readOnly: true,
+                    value: function () { return []; }
+                }
+            },
+
+            /*********************************************************************/
+
+            // LISTENER
+            attached: function () {
+                this._setHeader(XP.findParentElement(Polymer.dom(this), '[header=""]'));
+            },
+
+            // LISTENER
+            created: function () {
+                this._refresh = XP.debounce(this._refresh.bind(this));
+            },
+
+            // LISTENER
+            detached: function () {
+                this._setHeader(null);
+            },
+
+            /*********************************************************************/
+
+            // HANDLER
+            _handleSteps: function () {
+
+                // Vars
+                var self = this,
+                    pre  = self.activeStep,
+                    post = XP.getDistributedElement(Polymer.dom(self.$.content), 'mat-breadcrumb-step:last-of-type');
+
+                // Setting
+                self._setActiveStep(post);
+
+                // Propagating
+                if (pre) { pre.active = false; }
+                if (post) { post.active = true; }
+
+            }
+        });
+    </script>
+</dom-module>
