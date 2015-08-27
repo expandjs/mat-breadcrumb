@@ -55,56 +55,58 @@ It must be used in conjunction with [mat-breadcrumb](http://expandjs.com/element
 
 <dom-module name="mat-breadcrumb-step">
 
-    <style>
-        :host {
-            display: inline-block;
-            overflow: visible;
-        }
-
-        :host #matBreadcrumbWrapper {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            height: 100%;
-        }
-
-        :host #matBreadcrumbMain {
-            height: 100%;
-        }
-
-        :host #matBreadcrumbStepAnchor {
-            display: block;
-            height: 100%;
-            outline: 0;
-            overflow: hidden;
-            text-decoration: none;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        :host #matBreadcrumbStepAnchor[href]:hover {
-            text-decoration: underline;
-        }
-
-        :host #matBreadcrumbStepSeparator {
-            height: 0.706em;
-            margin: 0 0.4em;
-            min-height: 24px;
-            min-width: 24px;
-            width: 0.706em;
-        }
-
-        :host(:last-of-type) #matBreadcrumbStepSeparator {
-            display: none !important;
-        }
-    </style>
-
     <template>
+
+        <style>
+            :host {
+                display: inline-block;
+                overflow: visible;
+            }
+
+            :host #matBreadcrumbWrapper {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                height: 100%;
+            }
+
+            :host #matBreadcrumbMain {
+                height: 100%;
+            }
+
+            :host #matBreadcrumbStepAnchor {
+                display: block;
+                height: 100%;
+                outline: 0;
+                overflow: hidden;
+                text-decoration: none;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            :host #matBreadcrumbStepAnchor[href]:hover {
+                text-decoration: underline;
+            }
+
+            :host #matBreadcrumbStepSeparator {
+                height: 0.706em;
+                margin: 0 0.4em;
+                min-height: 24px;
+                min-width: 24px;
+                width: 0.706em;
+            }
+
+            :host(:last-of-type) #matBreadcrumbStepSeparator {
+                display: none !important;
+            }
+        </style>
+
         <div id="matBreadcrumbWrapper">
             <mat-ink id="matBreadcrumbStepMain" opacity="[[_computeLabelOpacity(active, mobile)]]">
                 <a id="matBreadcrumbStepAnchor" tabindex="-1" on-click="_handleClick">{{label}}</a>
             </mat-ink>
             <mat-icon id="matBreadcrumbStepSeparator" name="navigation:chevron-right" opacity="[[_computeIconOpacity(mobile)]]"></mat-icon>
         </div>
+
     </template>
 
     <script>

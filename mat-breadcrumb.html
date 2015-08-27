@@ -58,19 +58,21 @@ on a mobile device.
 
 <dom-module name="mat-breadcrumb">
 
-    <style>
-        :host {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            display: block;
-            overflow: hidden;
-            position: relative;
-        }
-    </style>
-
     <template>
+
+        <style>
+            :host {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                display: block;
+                overflow: hidden;
+                position: relative;
+            }
+        </style>
+
         <xp-media-query query="[[query]]" matched="{{mobile}}"></xp-media-query>
         <content id="content"></content>
+
     </template>
 
     <script>
