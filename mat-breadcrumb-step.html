@@ -20,27 +20,27 @@ It must be used in conjunction with [mat-breadcrumb](http://expandjs.com/element
 
 @element mat-breadcrumb-step
 @description A custom element used to display a Material Design breadcrumb step
-@keywords material design, material breadcrumb, web app, html5, expandjs, web-components
+@keywords material design, material breadcrumb, expandjs, web app, custom elements, web-components
 @group navigation
+
 @homepage http://expandjs.com/elements/mat-breadcrumb
 @repository https://github.com/ExpandJS/mat-breadcrumb
 @demo http://expandjs.com/demo/mat-breadcrumb
 
 @behavior xp-anchor-behavior /bower_components/xp-anchor-behavior/xp-anchor-behavior.html
-@behavior xp-slave-behavior /bower_components/xp-slave-behavior/xp-slave-behavior.html
+@behavior xp-breadcrumb-step-behavior /bower_components/xp-breadcrumb-behavior/xp-breadcrumb-step-behavior.html
 
-@dependency polymer Polymer/polymer#^1.1.0
-@dependency expandjs ExpandJS/expandjs#0.9.11
+@dependency polymer Polymer/polymer#^1.2.0
+@dependency expandjs ExpandJS/expandjs#0.10.0
 @dependency iron-flex-layout PolymerElements/iron-flex-layout#^1.0.0
-@dependency mat-ink ExpandJS/mat-ink#0.9.11
-@dependency mat-icon ExpandJS/mat-icon#0.9.11
-@dependency mat-icons ExpandJS/mat-icons#0.9.11
-@dependency xp-anchor-behavior ExpandJS/xp-anchor-behavior#0.9.11
-@dependency xp-slave-behavior ExpandJS/xp-slave-behavior#0.9.11
+@dependency mat-ink ExpandJS/mat-ink#0.10.0
+@dependency mat-icon ExpandJS/mat-icon#0.10.0
+@dependency mat-icons ExpandJS/mat-icons#0.10.0
+@dependency xp-anchor-behavior ExpandJS/xp-anchor-behavior#0.10.0
+@dependency xp-breadcrumb-behavior ExpandJS/xp-breadcrumb-behavior#0.10.0
 
-@devDependency mat-demo ExpandJS/mat-demo#0.9.11
-@devDependency mat-fab ExpandJS/mat-fab#0.9.11
-@devDependency mat-header-panel ExpandJS/mat-header-panel#0.9.11
+@devDependency mat-demo ExpandJS/mat-demo#0.10.0
+@devDependency mat-header-panel ExpandJS/mat-header-panel#0.10.0
 -->
 
 
@@ -48,46 +48,28 @@ It must be used in conjunction with [mat-breadcrumb](http://expandjs.com/element
 <link rel="import" href="../expandjs/expandjs.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../mat-icon/mat-icon.html">
-<link rel="import" href="../mat-icons/navigation-icons.html">
+<link rel="import" href="../mat-icons/mat-icons.html">
 <link rel="import" href="../mat-ink/mat-ink.html">
 <link rel="import" href="../xp-anchor-behavior/xp-anchor-behavior.html">
-<link rel="import" href="../xp-slave-behavior/xp-slave-behavior.html">
+<link rel="import" href="../xp-anchor-behavior/xp-anchor-styles.html">
+<link rel="import" href="../xp-breadcrumb-behavior/xp-breadcrumb-step-behavior.html">
+<link rel="import" href="../xp-breadcrumb-behavior/xp-breadcrumb-step-styles.html">
 
-<dom-module name="mat-breadcrumb-step">
+<dom-module id="mat-breadcrumb-step">
 
-    <template>
+    <template strip-whitespace>
+
+        <style include="xp-anchor-styles"></style>
+        <style include="xp-breadcrumb-step-styles"></style>
 
         <style>
-            :host {
-                display: inline-block;
-                overflow: visible;
-            }
-
-            :host #matBreadcrumbWrapper {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                height: 100%;
-            }
-
-            :host #matBreadcrumbMain {
-                height: 100%;
-            }
-
-            :host #matBreadcrumbStepAnchor {
-                display: block;
-                height: 100%;
-                outline: 0;
+            :host .label {
                 overflow: hidden;
-                text-decoration: none;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
             }
 
-            :host #matBreadcrumbStepAnchor[href]:hover {
-                text-decoration: underline;
-            }
-
-            :host #matBreadcrumbStepSeparator {
+            :host .icon {
                 height: 0.706em;
                 margin: 0 0.4em;
                 min-height: 24px;
@@ -95,17 +77,16 @@ It must be used in conjunction with [mat-breadcrumb](http://expandjs.com/element
                 width: 0.706em;
             }
 
-            :host(:last-of-type) #matBreadcrumbStepSeparator {
+            :host(:last-of-type) .icon {
                 display: none !important;
             }
         </style>
 
-        <div id="matBreadcrumbWrapper">
-            <mat-ink id="matBreadcrumbStepMain" opacity="[[_computeLabelOpacity(active, mobile)]]">
-                <a id="matBreadcrumbStepAnchor" tabindex="-1" on-click="_handleClick">{{label}}</a>
-            </mat-ink>
-            <mat-icon id="matBreadcrumbStepSeparator" name="navigation:chevron-right" opacity="[[_computeIconOpacity(mobile)]]"></mat-icon>
-        </div>
+        <a class="anchor" tabindex="-1" on-click="_anchorHandler">
+            <mat-ink class="label" opacity="[[_computeLabelOpacity(active, mobile)]]">[[label]]</mat-ink>
+        </a>
+
+        <mat-icon class="icon" name="mat:chevron-right" opacity="[[_computeIconOpacity(mobile)]]"></mat-icon>
 
     </template>
 
@@ -118,21 +99,8 @@ It must be used in conjunction with [mat-breadcrumb](http://expandjs.com/element
             //BEHAVIORS
             behaviors: [
                 Polymer.XPAnchorBehavior,
-                Polymer.XPSlaveBehavior
+                Polymer.XPBreadcrumbStepBehavior
             ],
-
-            /*********************************************************************/
-
-            /**
-             * Returns the masters map.
-             *
-             * @method _setupMasters
-             * @returns {Object}
-             * @private
-             */
-            _setupMasters: function () {
-                return {breadcrumb: 'mat-breadcrumb'};
-            },
 
             /*********************************************************************/
 
@@ -140,56 +108,15 @@ It must be used in conjunction with [mat-breadcrumb](http://expandjs.com/element
             properties: {
 
                 /**
-                 * If set to true, the step is active.
-                 *
-                 * @attribute active
-                 * @type boolean
-                 * @default false
-                 * @notifies
-                 */
-                active: {
-                    notify: true,
-                    reflectToAttribute: true,
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * The master breadcrumb.
-                 *
-                 * @attribute breadcrumb
-                 * @type Element
-                 * @notifies
-                 * @readonly
-                 */
-                breadcrumb: {
-                    notify: true,
-                    readOnly: true,
-                    type: Object,
-                    value: null
-                },
-
-                /**
-                 * The step's label.
-                 *
-                 * @attribute label
-                 * @type string
-                 */
-                label: {
-                    reflectToAttribute: true,
-                    type: String,
-                    value: null
-                },
-
-                /**
-                 * If set to true, the step will be `mobile` styled.
+                 * If set to true, the breadcrumb `mobile` style will be applied.
                  *
                  * @attribute mobile
                  * @type boolean
                  * @default false
+                 * @notifies
                  */
                 mobile: {
-                    reflectToAttribute: true,
+                    notify: true,
                     type: Boolean,
                     value: false
                 }
@@ -199,28 +126,13 @@ It must be used in conjunction with [mat-breadcrumb](http://expandjs.com/element
 
             // COMPUTER
             _computeIconOpacity: function (mobile) {
-                return mobile ? 'hint' : null;
+                return mobile ? 'hint' : 'icon';
             },
 
             // COMPUTER
             _computeLabelOpacity: function (active, mobile) {
                 return !active && mobile ? 'hint' : null;
-            },
-
-            /*********************************************************************/
-
-            // LISTENER
-            ready: function () {
-                this._setAnchor(this.$.matBreadcrumbStepAnchor);
-            },
-
-            /*********************************************************************/
-
-            // HANDLER
-            _handleClick: function (event) {
-                if (!event.button && this.fire('mat-redirect', {firer: this, href: event.currentTarget.href}, {cancelable: true}).defaultPrevented) { event.preventDefault(); }
             }
-
         });
     </script>
 </dom-module>
